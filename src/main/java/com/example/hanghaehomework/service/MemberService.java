@@ -8,6 +8,7 @@ import com.example.hanghaehomework.entity.UserRoleEnum;
 import com.example.hanghaehomework.jwt.JwtUtil;
 import com.example.hanghaehomework.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
     // ADMIN_TOKEN
     private static final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
     @Transactional(readOnly = true)
@@ -27,20 +29,21 @@ public class MemberService {
         String userName = memberRequestDto.getUsername();
         String password = memberRequestDto.getPassword();
 
-
         Member member = memberRepository.findByUsername(userName).orElseThrow(
                 () -> new IllegalArgumentException("등록된 아이디가 없습니다.")
         );
 
-        if(!member.getPassword().equals(password)){
+        if(!passwordEncoder.matches(password, member.getPassword())){
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(member.getUsername(), member.getRole()));
     }
     @Transactional
     public void signup(SignupRequestDto signupRequestDto)  {
+        String username = signupRequestDto.getUsername();
+        String password = passwordEncoder.encode(signupRequestDto.getPassword());
         //회원가입 유저 아이디 중복확인
-        Optional<Member> overlapUser = memberRepository.findByUsername(signupRequestDto.getUsername());
+        Optional<Member> overlapUser = memberRepository.findByUsername(username);
         if(overlapUser.isPresent()) {
             throw new IllegalArgumentException("중복된 아이디가 있습니다.");
         }
@@ -51,7 +54,7 @@ public class MemberService {
             }
             role = UserRoleEnum.ADMIN;
         }
-        Member member = new Member(signupRequestDto, role);
+        Member member = new Member(username, password, role);
         memberRepository.save(member);
 
     }

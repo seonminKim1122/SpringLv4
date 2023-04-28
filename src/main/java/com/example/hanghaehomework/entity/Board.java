@@ -37,11 +37,27 @@ public class Board extends Timestamped {
         this.contents = requestDto.getContents();
     }
 
+    public Board(BoardRequestDto requestDto, Member member) {
+        if (member.getUsername() == null) {
+            throw new IllegalArgumentException("username이 존재하지 않습니다.");
+        }
 
+        if (requestDto.getTitle() == null || requestDto.getTitle().isEmpty()) {
+            throw new IllegalArgumentException("글의 제목이 없습니다.");
+        }
+
+        if (requestDto.getContents() == null || requestDto.getContents().isEmpty()) {
+            throw new IllegalArgumentException("글의 내용이 없습니다.");
+        }
+
+        this.title = requestDto.getTitle();
+        this.contents = requestDto.getContents();
+        this.member = member;
+    }
 
 
     public void update(BoardRequestDto requestDto) {
-        this.member = requestDto.getMember();
+//        this.member = requestDto.getMember();
         this.title = requestDto.getTitle();
         this.contents = requestDto.getContents();
     }

@@ -30,8 +30,8 @@ public class CommentService {
 
     // 댓글 작성
     @Transactional
-    public CommentResponseDto createComment(CommentRequestDto commentRequestDto, HttpServletRequest request) {
-        Member member = checkJwtToken(request);
+    public CommentResponseDto createComment(CommentRequestDto commentRequestDto, HttpServletRequest request, Member member) {
+//        Member member = checkJwtToken(request);
         if(member == null){
             throw new IllegalArgumentException("로그인이 필요합니다");
         }
@@ -45,8 +45,8 @@ public class CommentService {
 
     // 댓글 삭제
     @Transactional
-    public CommentDeleteResponseDto deleteComment(Long id, HttpServletRequest request) {
-        Member member = checkJwtToken(request);
+    public CommentDeleteResponseDto deleteComment(Long id, HttpServletRequest request, Member member) {
+//        Member member = checkJwtToken(request);
         if(member == null){
             throw new IllegalArgumentException("로그인이 필요합니다.");
         }
@@ -64,8 +64,8 @@ public class CommentService {
 
     // 댓글 수정
     @Transactional
-    public CommentResponseDto updateComment(Long id, CommentRequestDto commentRequestDto, HttpServletRequest request) {
-        Member member = checkJwtToken(request);
+    public CommentResponseDto updateComment(Long id, CommentRequestDto commentRequestDto, HttpServletRequest request, Member member) {
+//        Member member = checkJwtToken(request);
         if(member == null){
             throw new IllegalArgumentException("로그인이 필요합니다.");
         }
@@ -80,24 +80,24 @@ public class CommentService {
         return new CommentResponseDto(comment);
     }
 
-    public Member checkJwtToken(HttpServletRequest request){
-        String token = jwtUtil.resolveToken(request);
-        Claims claims;
-        if(token != null){
-            if(jwtUtil.validateToken(token)){
-                claims = jwtUtil.getUserInfoFromToken(token);
-            }else{
-                throw new IllegalArgumentException("Token Error");
-            }
-
-            Member member = memberRepository.findByUsername(claims.getSubject()).orElseThrow(
-                    () -> new IllegalArgumentException("사용자가 존재하지 않습니다")
-            );
-            return member;
-        }else {
-            return null;
-        }
-    }
+//    public Member checkJwtToken(HttpServletRequest request){
+//        String token = jwtUtil.resolveToken(request);
+//        Claims claims;
+//        if(token != null){
+//            if(jwtUtil.validateToken(token)){
+//                claims = jwtUtil.getUserInfoFromToken(token);
+//            }else{
+//                throw new IllegalArgumentException("Token Error");
+//            }
+//
+//            Member member = memberRepository.findByUsername(claims.getSubject()).orElseThrow(
+//                    () -> new IllegalArgumentException("사용자가 존재하지 않습니다")
+//            );
+//            return member;
+//        }else {
+//            return null;
+//        }
+//    }
 
 
 }
